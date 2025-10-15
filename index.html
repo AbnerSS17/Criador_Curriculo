@@ -14,49 +14,56 @@
         }
         /* Estilos específicos para a visualização do PDF */
         #cv-content {
-            padding: 20px; /* Reduzido o padding para mobile */
+            padding: 20px;
             background: white;
-            /* Largura máxima para manter o aspecto A4 em telas grandes */
-            max-width: 800px; 
+            max-width: 800px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            /* NOVO: Garante que o preview tenha uma altura mínima no mobile, mesmo vazio */
-            min-height: 300px; 
+            min-height: 300px;
+            /* IMPORTANTE: Removemos a altura e largura fixas para permitir o scroll */
         }
         @media (min-width: 1024px) {
              #cv-content {
-                padding: 40px; /* Padding maior no desktop */
+                padding: 40px;
             }
         }
 
         .cv-section-title {
-            border-bottom: 2px solid #3b82f6; /* Azul primário do Tailwind */
+            border-bottom: 2px solid #3b82f6;
             padding-bottom: 4px;
             margin-top: 20px;
             margin-bottom: 15px;
-            font-size: 1.25rem; /* text-xl */
+            font-size: 1.25rem;
         }
 
-        /* Classes para a experiência */
         .cv-job-title {
-            font-weight: 600; /* semibold */
-            color: #1f2937; /* gray-800 */
+            font-weight: 600;
+            color: #1f2937;
         }
         .cv-company-info {
-            font-size: 0.875rem; /* text-sm */
-            color: #6b7280; /* gray-500 */
+            font-size: 0.875rem;
+            color: #6b7280;
             margin-bottom: 5px;
         }
         .cv-description-item {
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.875rem;
             margin-left: 15px;
             list-style: disc;
         }
 
-        /* Classe para forçar quebra de página se estiver em modo de impressão (PDF) */
         .html2pdf__page-break {
             height: 0;
             margin: 0;
             padding: 0;
+        }
+        
+        /* NOVO ESTILO: Para o container de botões flutuantes no mobile */
+        .mobile-actions {
+            position: sticky; /* ou fixed, mas sticky é melhor neste caso */
+            top: 0;
+            z-index: 10;
+            background-color: #f4f7f9; /* Cor de fundo da página */
+            padding: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
     </style>
 </head>
@@ -64,15 +71,19 @@
 
     <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6 lg:mb-8">Gerador de Currículo Dinâmico</h1>
 
-    <div class="lg:hidden flex justify-center mb-4 space-x-4">
-        <button id="show-form-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-blue-500 text-white hover:bg-blue-600">
-            Editar Formulário
-        </button>
-        <button id="show-preview-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-gray-300 text-gray-800 hover:bg-gray-400">
-            Pré-visualizar CV
+    <div id="mobile-actions" class="lg:hidden mobile-actions">
+        <div class="flex justify-center mb-4 space-x-4">
+            <button id="show-form-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-gray-300 text-gray-800 hover:bg-gray-400">
+                Editar Formulário
+            </button>
+            <button id="show-preview-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-blue-500 text-white hover:bg-blue-600">
+                Pré-visualizar CV
+            </button>
+        </div>
+        <button id="download-pdf-mobile" class="w-full py-3 px-4 border border-transparent rounded-md shadow-xl text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.01] hidden">
+            Gerar PDF (Baixar Currículo)
         </button>
     </div>
-
     <div id="main-content" class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:gap-8">
 
         <div id="form-container" class="w-full lg:w-1/2 mb-6 lg:mb-0">
@@ -155,28 +166,27 @@
                 </form>
             </div>
         </div>
-
         <div id="preview-container" class="w-full lg:w-1/2 hidden lg:block">
             <div id="cv-content" class="rounded-xl shadow-lg border border-gray-200">
                 <div class="text-center p-8 text-gray-500">
                     <p class="text-lg font-medium">Preencha o formulário para visualizar seu currículo aqui.</p>
                 </div>
             </div>
+            <button id="download-pdf-desktop" class="mt-6 w-full py-3 px-4 border border-transparent rounded-md shadow-xl text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.01]">
+                Gerar PDF (Baixar Currículo)
+            </button>
         </div>
-    </div>
+        </div>
     
-    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 lg:static lg:p-0 lg:mt-6 max-w-7xl mx-auto">
-        <button id="download-pdf" class="w-full py-3 px-4 border border-transparent rounded-md shadow-xl text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.01]">
-            Gerar PDF (Baixar Currículo)
-        </button>
-    </div>
-
     <script>
         // Variáveis de controle do DOM
         const form = document.getElementById('cv-form');
         const cvContent = document.getElementById('cv-content');
-        const downloadPdfBtn = document.getElementById('download-pdf');
         
+        // Botões de PDF
+        const downloadPdfMobileBtn = document.getElementById('download-pdf-mobile');
+        const downloadPdfDesktopBtn = document.getElementById('download-pdf-desktop');
+
         // Containers Dinâmicos
         const experienciasContainer = document.getElementById('experiencias-container');
         const formacoesContainer = document.getElementById('formacoes-container');
@@ -196,13 +206,20 @@
             if (view === 'form') {
                 formContainer.classList.remove('hidden');
                 previewContainer.classList.add('hidden');
+                downloadPdfMobileBtn.classList.add('hidden'); // Oculta o PDF no modo Form
+                
+                // Estilo do Botão
                 showFormBtn.classList.add('bg-blue-500', 'text-white');
                 showFormBtn.classList.remove('bg-gray-300', 'text-gray-800');
                 showPreviewBtn.classList.add('bg-gray-300', 'text-gray-800');
                 showPreviewBtn.classList.remove('bg-blue-500', 'text-white');
+
             } else { // 'preview'
                 formContainer.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
+                downloadPdfMobileBtn.classList.remove('hidden'); // Mostra o PDF no modo Preview
+                
+                // Estilo do Botão
                 showPreviewBtn.classList.add('bg-blue-500', 'text-white');
                 showPreviewBtn.classList.remove('bg-gray-300', 'text-gray-800');
                 showFormBtn.classList.add('bg-gray-300', 'text-gray-800');
@@ -212,7 +229,8 @@
 
         // Inicializa a visualização no mobile para o formulário
         if (isMobileView) {
-            toggleView('form');
+            // Inicia em modo Preview (agora em destaque)
+            toggleView('preview');
         } else {
             // Garante que ambos estejam visíveis no desktop
             formContainer.classList.remove('hidden');
@@ -229,12 +247,13 @@
         window.addEventListener('resize', () => {
             isMobileView = window.innerWidth < 1024;
             if (!isMobileView) {
-                // Se for desktop, garante que ambos estejam visíveis
+                // Se for desktop, garante que ambos estejam visíveis e o PDF desktop
                 formContainer.classList.remove('hidden');
                 previewContainer.classList.remove('hidden');
+                downloadPdfMobileBtn.classList.add('hidden'); // Esconde o PDF mobile no desktop
             } else {
-                // Se voltar ao mobile, garante que a visualização de abas volte
-                toggleView('form');
+                // Se voltar ao mobile, aplica o estado de visualização mobile
+                toggleView('preview'); // Mantém o modo Preview como inicial
             }
         });
 
@@ -282,6 +301,10 @@
                 // CORREÇÃO CRÍTICA: Adiciona listeners ao novo item para atualizar o CV em tempo real
                 newItem.querySelectorAll('input, textarea, select').forEach(input => {
                     input.addEventListener('input', renderCV);
+                    // Adiciona o evento change para selects, garantindo atualização em mudança de opção
+                    if (input.tagName === 'SELECT') { 
+                         input.addEventListener('change', renderCV);
+                    }
                 });
                 updateTitles();
             };
@@ -574,15 +597,19 @@
         });
         // O restante dos listeners para campos dinâmicos é adicionado dentro de setupDynamicItems
 
-        // Evento para gerar o PDF
-        downloadPdfBtn.addEventListener('click', () => {
-            // Re-renderiza o CV uma última vez para garantir
+        // Funções de geração de PDF
+        const handleDownloadPdf = (btn) => {
+             // Re-renderiza o CV uma última vez para garantir
             renderCV(); 
             
             const element = document.getElementById('cv-content');
             
             // Oculta o botão de download para a impressão
-            downloadPdfBtn.classList.add('hidden');
+            btn.classList.add('hidden');
+            // Oculta o outro botão de PDF (se houver) para evitar que apareça na pré-visualização de impressão
+            if (btn === downloadPdfMobileBtn && !isMobileView) downloadPdfDesktopBtn.classList.add('hidden');
+            if (btn === downloadPdfDesktopBtn && isMobileView) downloadPdfMobileBtn.classList.add('hidden');
+
 
             // Configurações do html2pdf
             const opt = {
@@ -596,9 +623,19 @@
             // Gera e salva o PDF
             html2pdf().set(opt).from(element).save().then(() => {
                 // Reexibe o botão após a geração
-                downloadPdfBtn.classList.remove('hidden');
+                btn.classList.remove('hidden');
+                if (btn === downloadPdfMobileBtn && !isMobileView) downloadPdfDesktopBtn.classList.remove('hidden');
+                if (btn === downloadPdfDesktopBtn && isMobileView) downloadPdfMobileBtn.classList.remove('hidden');
             });
-        });
+        };
+
+
+        // Evento para gerar o PDF (Mobile)
+        downloadPdfMobileBtn.addEventListener('click', () => handleDownloadPdf(downloadPdfMobileBtn));
+        
+        // Evento para gerar o PDF (Desktop)
+        downloadPdfDesktopBtn.addEventListener('click', () => handleDownloadPdf(downloadPdfDesktopBtn));
+
 
         // Chamada inicial para preencher o CV com dados vazios
         renderCV();

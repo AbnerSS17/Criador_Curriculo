@@ -57,11 +57,6 @@
              page-break-inside: avoid;
         }
 
-        /* Oculta o botão de remover no template inicial para evitar erro no setup dinâmico */
-        .initial-template .remove-btn {
-            display: none;
-        }
-
     </style>
 </head>
 <body class="p-4 sm:p-6 bg-gray-100">
@@ -69,10 +64,10 @@
     <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6 lg:mb-8">Gerador de Currículo Dinâmico</h1>
 
     <div class="lg:hidden flex justify-center mb-4 space-x-4">
-        <button id="show-form-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-gray-300 text-gray-800 hover:bg-gray-400">
+        <button id="show-form-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-blue-500 text-white hover:bg-blue-600">
             Editar Formulário
         </button>
-        <button id="show-preview-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-blue-500 text-white hover:bg-blue-600">
+        <button id="show-preview-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-gray-300 text-gray-800 hover:bg-gray-400">
             Pré-visualizar CV
         </button>
     </div>
@@ -119,7 +114,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Experiência Profissional</h2>
                         <div id="experiencias-container" class="space-y-4">
-                            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
+                            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -162,7 +157,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Formação Acadêmica</h2>
                         <div id="formacoes-container" class="space-y-4">
-                            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
+                            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Formação #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -219,7 +214,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Idiomas</h2>
                         <div id="idiomas-container" class="space-y-4">
-                            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
+                            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Idioma #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -303,7 +298,10 @@
                 renderCV(); // Garante que o CV está atualizado antes de mostrar
                 formContainer.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
-                downloadBtnMobileContainer.classList.remove('hidden'); // Exibe o botão de PDF na pré-visualização
+                // Se estiver no mobile, mostra o botão de download
+                if (isMobileView) {
+                    downloadBtnMobileContainer.classList.remove('hidden'); 
+                }
                 
                 // Estilos para o botão de Pré-visualização ativo (em destaque)
                 showPreviewBtn.classList.add('bg-blue-500', 'text-white');
@@ -315,11 +313,19 @@
 
         // Inicializa a visualização
         if (isMobileView) {
-            toggleView('form'); // Começa no formulário no mobile
+            // Inicializa o layout para Mobile (Formulário visível)
+            toggleView('form'); 
         } else {
+            // Inicializa o layout para Desktop (Ambos visíveis)
             formContainer.classList.remove('hidden');
             previewContainer.classList.remove('hidden');
-            downloadBtnMobileContainer.classList.add('hidden');
+            downloadBtnMobileContainer.classList.add('hidden'); // O botão fixo é ocultado no desktop
+            
+            // Corrige o estilo dos botões mobile para refletir o estado inicial
+            showFormBtn.classList.add('bg-blue-500', 'text-white');
+            showFormBtn.classList.remove('bg-gray-300', 'text-gray-800');
+            showPreviewBtn.classList.add('bg-gray-300', 'text-gray-800');
+            showPreviewBtn.classList.remove('bg-blue-500', 'text-white');
         }
 
         showFormBtn.addEventListener('click', () => toggleView('form'));
@@ -336,7 +342,7 @@
                 downloadBtnMobileContainer.classList.add('hidden');
             } else if (isMobileView && !wasMobile) {
                 // Transição de Desktop para Mobile
-                toggleView('form');
+                toggleView('form'); 
             }
         });
         
@@ -347,10 +353,12 @@
             if (!dateString) return 'Atual';
             const [year, month] = dateString.split('-');
             const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-            return `${monthNames[parseInt(month) - 1]}/${year}`;
+            // Garante que o mês é válido
+            const monthIndex = parseInt(month) - 1;
+            return monthIndex >= 0 && monthIndex <= 11 ? `${monthNames[monthIndex]}/${year}` : `${year}`;
         };
         
-        // Templates de HTML puros
+        // Templates de HTML puros (sem o primeiro item, que já está no HTML)
         const experienciaTemplate = `
             <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #X</h3>
@@ -458,7 +466,10 @@
             const updateTitles = () => {
                 Array.from(container.children).forEach((item, index) => {
                     // Atualiza o título (Ex: Experiência #1)
-                    item.querySelector('.group-title').textContent = `${titlePrefix} #${index + 1}`;
+                    const titleElement = item.querySelector('.group-title');
+                    if (titleElement) {
+                        titleElement.textContent = `${titlePrefix} #${index + 1}`;
+                    }
                 });
             };
 
@@ -469,11 +480,12 @@
                     removeButton.addEventListener('click', (e) => {
                         e.target.closest(`.${itemClass}`).remove();
                         updateTitles();
-                        renderCV();
+                        renderCV(); // Renderiza o CV após remover
                     });
                 }
             };
 
+            // Adiciona o novo item ao DOM
             const addItem = () => {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = templateHTML.trim();
@@ -484,23 +496,25 @@
                 renderCV(); // Renderiza o CV após adicionar um item
             };
             
-            // 1. Remove o template inicial (o que tem o "Experiência #1" no HTML)
-            const initialTemplate = container.querySelector('.initial-template');
-            if (initialTemplate) {
-                 initialTemplate.remove();
-            }
+            // 1. Inicializa o listener de remoção para os itens que já estão no HTML
+            Array.from(container.children).forEach(attachListeners);
 
-            // 2. Adiciona o primeiro item real na inicialização (chamando a função addItem)
-            addItem(); 
-
-            // 3. Inicializa eventos no botão de adicionar
+            // 2. Inicializa eventos no botão de adicionar
             addButton.addEventListener('click', addItem);
+
+            // 3. Atualiza os títulos no início
+            updateTitles();
         }
 
         // Chamadas para configurar os itens dinâmicos
-        setupDynamicItems(experienciasContainer, experienciaTemplate, 'add-experiencia', 'experiencia-item', 'Experiência');
-        setupDynamicItems(formacoesContainer, formacaoTemplate, 'add-formacao', 'formacao-item', 'Formação');
-        setupDynamicItems(idiomasContainer, idiomaTemplate, 'add-idioma', 'idioma-item', 'Idioma');
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDynamicItems(experienciasContainer, experienciaTemplate, 'add-experiencia', 'experiencia-item', 'Experiência');
+            setupDynamicItems(formacoesContainer, formacaoTemplate, 'add-formacao', 'formacao-item', 'Formação');
+            setupDynamicItems(idiomasContainer, idiomaTemplate, 'add-idioma', 'idioma-item', 'Idioma');
+            
+            // Chamada inicial para preencher o CV
+            renderCV();
+        });
 
 
         // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DO CV ---
@@ -511,7 +525,8 @@
             
             // Reúne dados simples
             for (let pair of data.entries()) {
-                if (!pair[0].includes('-')) { // Ignora campos de listas dinâmicas
+                // Adiciona uma verificação para evitar valores nulos/vazios no objeto
+                if (pair[1] && pair[1].trim() && !pair[0].includes('-')) {
                     cvData[pair[0]] = pair[1].trim();
                 }
             }
@@ -555,6 +570,7 @@
 
             // 1. HEADER (DADOS PESSOAIS)
             if (cvData.nome) {
+                const linkedinUrl = cvData.linkedin ? cvData.linkedin.replace(/https?:\/\//, '') : '';
                 html += `
                     <div class="text-center pb-4 mb-4 border-b border-gray-300">
                         <h1 class="text-3xl font-extrabold text-gray-900">${cvData.nome.toUpperCase()}</h1>
@@ -564,8 +580,8 @@
                             ${cvData.email ? cvData.email : ''}
                             ${(cvData.telefone || cvData.email) && cvData.endereco ? ' | ' : ''}
                             ${cvData.endereco ? cvData.endereco : ''}
-                            ${(cvData.telefone || cvData.email || cvData.endereco) && cvData.linkedin ? ' | ' : ''}
-                            ${cvData.linkedin ? `<a href="https://${cvData.linkedin.replace(/https?:\/\//, '')}" target="_blank" class="text-blue-600 hover:underline">${cvData.linkedin.replace(/https?:\/\//, '')}</a>` : ''}
+                            ${(cvData.telefone || cvData.email || cvData.endereco) && linkedinUrl ? ' | ' : ''}
+                            ${linkedinUrl ? `<a href="https://${linkedinUrl}" target="_blank" class="text-blue-600 hover:underline">${linkedinUrl}</a>` : ''}
                         </p>
                     </div>
                 `;
@@ -684,7 +700,8 @@
             downloadBtnMobileContainer.classList.add('hidden');
 
             // Nome de arquivo
-            const fileName = (cvData.nome || 'curriculo').toLowerCase().replace(/\s/g, '-') + '.pdf';
+            const nomeCurriculo = document.getElementById('nome').value.trim() || 'curriculo';
+            const fileName = nomeCurriculo.toLowerCase().replace(/\s/g, '-') + '.pdf';
 
             // Configurações do html2pdf
             const opt = {
@@ -704,8 +721,6 @@
             });
         });
 
-        // Chamada inicial para preencher o CV
-        document.addEventListener('DOMContentLoaded', renderCV);
     </script>
 </body>
 </html>

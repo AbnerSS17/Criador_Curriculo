@@ -22,13 +22,13 @@
         }
         @media (min-width: 1024px) {
              #cv-content {
-                padding: 40px; [span_0](start_span)/* Padding maior no desktop[span_0](end_span) */
+                padding: 40px; /* Padding maior no desktop */
             }
         }
 
         /* Estilos para títulos de seção no CV */
         .cv-section-title {
-            border-bottom: 2px solid #3b82f6; [span_1](start_span)/* Azul primário do Tailwind[span_1](end_span) */
+            border-bottom: 2px solid #3b82f6; /* Azul primário do Tailwind */
             padding-bottom: 4px;
             margin-top: 20px;
             margin-bottom: 15px;
@@ -37,31 +37,29 @@
 
         /* Estilos de experiência no CV */
         .cv-job-title {
-            font-weight: 600; [span_2](start_span)/* semibold[span_2](end_span) */
-            color: #1f2937; [span_3](start_span)/* gray-800[span_3](end_span) */
+            font-weight: 600; /* semibold */
+            color: #1f2937; /* gray-800 */
         }
         .cv-company-info {
-            font-size: 0.875rem; [span_4](start_span)/* text-sm[span_4](end_span) */
-            color: #6b7280; [span_5](start_span)/* gray-500[span_5](end_span) */
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* gray-500 */
             margin-bottom: 5px;
         }
         .cv-description-item {
-            font-size: 0.875rem; [span_6](start_span)/* text-sm[span_6](end_span) */
+            font-size: 0.875rem; /* text-sm */
             margin-left: 15px;
-            list-style: disc; [span_7](start_span)/*[span_7](end_span) */
-        }
-
-        [span_8](start_span)/* Classe para forçar quebra de página se estiver em modo de impressão (PDF)[span_8](end_span) */
-        .html2pdf__page-break {
-            height: 0;
-            margin: 0;
-            padding: 0;
+            list-style: disc; /* */
         }
 
         /* Estilo para quebra de itens de lista em PDF */
         .break-avoid {
              break-inside: avoid;
              page-break-inside: avoid;
+        }
+
+        /* Oculta o botão de remover no template inicial para evitar erro no setup dinâmico */
+        .initial-template .remove-btn {
+            display: none;
         }
 
     </style>
@@ -121,7 +119,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Experiência Profissional</h2>
                         <div id="experiencias-container" class="space-y-4">
-                            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -164,7 +162,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Formação Acadêmica</h2>
                         <div id="formacoes-container" class="space-y-4">
-                            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Formação #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -221,7 +219,7 @@
                     <div class="section-group mt-6 pt-6 border-t border-gray-200">
                         <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Idiomas</h2>
                         <div id="idiomas-container" class="space-y-4">
-                            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid initial-template">
                                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Idioma #1</h3>
                                 <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
                                     Remover
@@ -270,46 +268,46 @@
 
     <script>
         // Variáveis de controle do DOM
-        const form = document.getElementById('cv-form'); [span_9](start_span)//[span_9](end_span)
+        const form = document.getElementById('cv-form');
         const cvContent = document.getElementById('cv-content');
-        const downloadPdfBtn = document.getElementById('download-pdf'); [span_10](start_span)//[span_10](end_span)
+        const downloadPdfBtn = document.getElementById('download-pdf');
         const downloadBtnMobileContainer = document.getElementById('download-button-mobile-container');
         
         // Containers Dinâmicos
-        const experienciasContainer = document.getElementById('experiencias-container'); [span_11](start_span)//[span_11](end_span)
-        const formacoesContainer = document.getElementById('formacoes-container'); [span_12](start_span)//[span_12](end_span)
-        const idiomasContainer = document.getElementById('idiomas-container'); [span_13](start_span)//[span_13](end_span)
+        const experienciasContainer = document.getElementById('experiencias-container');
+        const formacoesContainer = document.getElementById('formacoes-container');
+        const idiomasContainer = document.getElementById('idiomas-container');
 
         // Botões Responsivos
-        const formContainer = document.getElementById('form-container'); [span_14](start_span)//[span_14](end_span)
-        const previewContainer = document.getElementById('preview-container'); [span_15](start_span)//[span_15](end_span)
-        const showFormBtn = document.getElementById('show-form-btn'); [span_16](start_span)//[span_16](end_span)
-        const showPreviewBtn = document.getElementById('show-preview-btn'); [span_17](start_span)//[span_17](end_span)
+        const formContainer = document.getElementById('form-container');
+        const previewContainer = document.getElementById('preview-container');
+        const showFormBtn = document.getElementById('show-form-btn');
+        const showPreviewBtn = document.getElementById('show-preview-btn');
 
-        let isMobileView = window.innerWidth < 1024; [span_18](start_span)//[span_18](end_span)
+        let isMobileView = window.innerWidth < 1024;
 
         // --- FUNÇÕES DE LAYOUT RESPONSIVO ---
 
         function toggleView(view) {
             if (view === 'form') {
-                formContainer.classList.remove('hidden'); [span_19](start_span)//[span_19](end_span)
-                previewContainer.classList.add('hidden'); [span_20](start_span)//[span_20](end_span)
-                downloadBtnMobileContainer.classList.add('hidden'); // Oculta o botão de PDF no formulário
+                formContainer.classList.remove('hidden');
+                previewContainer.classList.add('hidden');
+                downloadBtnMobileContainer.classList.add('hidden');
                 
                 // Estilos para o botão de Formulário ativo
                 showFormBtn.classList.add('bg-blue-500', 'text-white');
                 showFormBtn.classList.remove('bg-gray-300', 'text-gray-800');
-                showPreviewBtn.classList.add('bg-gray-300', 'text-gray-800'); [span_21](start_span)//[span_21](end_span)
+                showPreviewBtn.classList.add('bg-gray-300', 'text-gray-800');
                 showPreviewBtn.classList.remove('bg-blue-500', 'text-white');
             } else { // 'preview'
                 renderCV(); // Garante que o CV está atualizado antes de mostrar
-                formContainer.classList.add('hidden'); [span_22](start_span)//[span_22](end_span)
-                previewContainer.classList.remove('hidden'); [span_23](start_span)//[span_23](end_span)
+                formContainer.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
                 downloadBtnMobileContainer.classList.remove('hidden'); // Exibe o botão de PDF na pré-visualização
                 
                 // Estilos para o botão de Pré-visualização ativo (em destaque)
                 showPreviewBtn.classList.add('bg-blue-500', 'text-white');
-                showPreviewBtn.classList.remove('bg-gray-300', 'text-gray-800'); [span_24](start_span)//[span_24](end_span)
+                showPreviewBtn.classList.remove('bg-gray-300', 'text-gray-800');
                 showFormBtn.classList.add('bg-gray-300', 'text-gray-800');
                 showFormBtn.classList.remove('bg-blue-500', 'text-white');
             }
@@ -317,88 +315,42 @@
 
         // Inicializa a visualização
         if (isMobileView) {
-            toggleView('form'); [span_25](start_span)// Começa no formulário no mobile[span_25](end_span)
+            toggleView('form'); // Começa no formulário no mobile
         } else {
-            formContainer.classList.remove('hidden'); [span_26](start_span)//[span_26](end_span)
-            previewContainer.classList.remove('hidden'); [span_27](start_span)//[span_27](end_span)
-            downloadBtnMobileContainer.classList.add('hidden'); // O botão fixo é ocultado no desktop
+            formContainer.classList.remove('hidden');
+            previewContainer.classList.remove('hidden');
+            downloadBtnMobileContainer.classList.add('hidden');
         }
 
-        showFormBtn.addEventListener('click', () => toggleView('form')); [span_28](start_span)//[span_28](end_span)
-        showPreviewBtn.addEventListener('click', () => toggleView('preview')); [span_29](start_span)//[span_29](end_span)
+        showFormBtn.addEventListener('click', () => toggleView('form'));
+        showPreviewBtn.addEventListener('click', () => toggleView('preview'));
         
-        [span_30](start_span)window.addEventListener('resize', () => { //[span_30](end_span)
+        window.addEventListener('resize', () => {
             const wasMobile = isMobileView;
             isMobileView = window.innerWidth < 1024;
             
             if (!isMobileView && wasMobile) {
                 // Transição de Mobile para Desktop
-                formContainer.classList.remove('hidden'); [span_31](start_span)//[span_31](end_span)
-                previewContainer.classList.remove('hidden'); [span_32](start_span)//[span_32](end_span)
+                formContainer.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
                 downloadBtnMobileContainer.classList.add('hidden');
             } else if (isMobileView && !wasMobile) {
                 // Transição de Desktop para Mobile
-                toggleView('form'); [span_33](start_span)//[span_33](end_span)
+                toggleView('form');
             }
         });
         
         // --- FUNÇÕES DE MANIPULAÇÃO DO DOM DINÂMICO ---
 
         // Função para formatar a data (AAAA-MM -> Mês/AAAA)
-        [span_34](start_span)const formatDate = (dateString) => { //[span_34](end_span)
-            if (!dateString) return 'Atual'; [span_35](start_span)//[span_35](end_span)
-            const [year, month] = dateString.split('-'); [span_36](start_span)//[span_36](end_span)
-            const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]; [span_37](start_span)//[span_37](end_span)
-            return `${monthNames[parseInt(month) - 1]}/${year}`; [span_38](start_span)//[span_38](end_span)
+        const formatDate = (dateString) => {
+            if (!dateString) return 'Atual';
+            const [year, month] = dateString.split('-');
+            const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+            return `${monthNames[parseInt(month) - 1]}/${year}`;
         };
-
-        // Adiciona funcionalidade de adicionar/remover itens dinâmicos
-        function setupDynamicItems(container, templateHTML, addButtonId, itemClass, titlePrefix) {
-            const addButton = document.getElementById(addButtonId); [span_39](start_span)//[span_39](end_span)
-
-            [span_40](start_span)const updateTitles = () => { //[span_40](end_span)
-                Array.from(container.children).forEach((item, index) => {
-                    [span_41](start_span)// Atualiza o título (Ex: Experiência #1)[span_41](end_span)
-                    item.querySelector('.group-title').textContent = `${titlePrefix} #${index + 1}`;
-                });
-            };
-
-            const attachListeners = (item) => {
-                [span_42](start_span)// Evento para remover item[span_42](end_span)
-                item.querySelector('.remove-btn').addEventListener('click', (e) => {
-                    e.target.closest(`.${itemClass}`).remove();
-                    [span_43](start_span)updateTitles(); //[span_43](end_span)
-                    renderCV(); [span_44](start_span)//[span_44](end_span)
-                });
-                
-                [span_45](start_span)// Evento para renderizar o CV a cada input[span_45](end_span)
-                item.querySelectorAll('input, textarea, select').forEach(input => {
-                    [span_46](start_span)input.addEventListener('input', renderCV); //[span_46](end_span)
-                });
-            };
-
-            [span_47](start_span)const addItem = () => { //[span_47](end_span)
-                const tempDiv = document.createElement('div'); [span_48](start_span)//[span_48](end_span)
-                tempDiv.innerHTML = templateHTML.trim();
-                const newItem = tempDiv.firstChild;
-                container.appendChild(newItem); [span_49](start_span)//[span_49](end_span)
-                attachListeners(newItem); // Anexa listeners ao novo item
-                updateTitles(); [span_50](start_span)//[span_50](end_span)
-            };
-            
-            // Remove o template inicial (o que tem o "Experiência #1" no HTML)
-            if (container.children.length > 0) {
-                 container.children[0].remove();
-            }
-
-            // Adiciona o primeiro item real na inicialização
-            addItem(); 
-
-            [span_51](start_span)// Inicializa eventos no botão de adicionar[span_51](end_span)
-            addButton.addEventListener('click', addItem);
-        }
         
-        // Templates de HTML puros (mais fácil de clonar e manipular)
+        // Templates de HTML puros
         const experienciaTemplate = `
             <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
                 <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #X</h3>
@@ -434,7 +386,7 @@
                     <textarea name="descricao-exp" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Ex: Desenvolvi e mantive sistemas..."></textarea>
                 </div>
             </div>
-        `; [span_52](start_span)//[span_52](end_span)
+        `;
         
         const formacaoTemplate = `
             <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
@@ -471,7 +423,7 @@
                     </div>
                 </div>
             </div>
-        `; [span_53](start_span)//[span_53](end_span)
+        `;
         
         const idiomaTemplate = `
             <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
@@ -497,66 +449,112 @@
                     </div>
                 </div>
             </div>
-        `; [span_54](start_span)//[span_54](end_span)
+        `;
+
+        // Adiciona funcionalidade de adicionar/remover itens dinâmicos
+        function setupDynamicItems(container, templateHTML, addButtonId, itemClass, titlePrefix) {
+            const addButton = document.getElementById(addButtonId);
+
+            const updateTitles = () => {
+                Array.from(container.children).forEach((item, index) => {
+                    // Atualiza o título (Ex: Experiência #1)
+                    item.querySelector('.group-title').textContent = `${titlePrefix} #${index + 1}`;
+                });
+            };
+
+            const attachListeners = (item) => {
+                // Evento para remover item
+                const removeButton = item.querySelector('.remove-btn');
+                if (removeButton) {
+                    removeButton.addEventListener('click', (e) => {
+                        e.target.closest(`.${itemClass}`).remove();
+                        updateTitles();
+                        renderCV();
+                    });
+                }
+            };
+
+            const addItem = () => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = templateHTML.trim();
+                const newItem = tempDiv.firstChild;
+                container.appendChild(newItem);
+                attachListeners(newItem); // Anexa listeners ao novo item
+                updateTitles();
+                renderCV(); // Renderiza o CV após adicionar um item
+            };
+            
+            // 1. Remove o template inicial (o que tem o "Experiência #1" no HTML)
+            const initialTemplate = container.querySelector('.initial-template');
+            if (initialTemplate) {
+                 initialTemplate.remove();
+            }
+
+            // 2. Adiciona o primeiro item real na inicialização (chamando a função addItem)
+            addItem(); 
+
+            // 3. Inicializa eventos no botão de adicionar
+            addButton.addEventListener('click', addItem);
+        }
 
         // Chamadas para configurar os itens dinâmicos
-        setupDynamicItems(experienciasContainer, experienciaTemplate, 'add-experiencia', 'experiencia-item', 'Experiência'); [span_55](start_span)//[span_55](end_span)
-        setupDynamicItems(formacoesContainer, formacaoTemplate, 'add-formacao', 'formacao-item', 'Formação'); [span_56](start_span)//[span_56](end_span)
-        setupDynamicItems(idiomasContainer, idiomaTemplate, 'add-idioma', 'idioma-item', 'Idioma'); [span_57](start_span)//[span_57](end_span)
+        setupDynamicItems(experienciasContainer, experienciaTemplate, 'add-experiencia', 'experiencia-item', 'Experiência');
+        setupDynamicItems(formacoesContainer, formacaoTemplate, 'add-formacao', 'formacao-item', 'Formação');
+        setupDynamicItems(idiomasContainer, idiomaTemplate, 'add-idioma', 'idioma-item', 'Idioma');
 
 
         // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DO CV ---
 
         function renderCV() {
-            const data = new FormData(form); [span_58](start_span)//[span_58](end_span)
-            const cvData = {}; [span_59](start_span)//[span_59](end_span)
+            const data = new FormData(form);
+            const cvData = {};
             
-            [span_60](start_span)// Reúne dados simples[span_60](end_span)
+            // Reúne dados simples
             for (let pair of data.entries()) {
-                [span_61](start_span)if (!pair[0].includes('-')) { // Ignora campos de listas dinâmicas[span_61](end_span)
-                    cvData[pair[0]] = pair[1].trim(); [span_62](start_span)//[span_62](end_span)
+                if (!pair[0].includes('-')) { // Ignora campos de listas dinâmicas
+                    cvData[pair[0]] = pair[1].trim();
                 }
             }
 
             // Reúne dados de listas dinâmicas (Experiências, Formações, Idiomas)
-            cvData.experiencias = []; [span_63](start_span)//[span_63](end_span)
-            [span_64](start_span)document.querySelectorAll('.experiencia-item').forEach(item => { //[span_64](end_span)
+            cvData.experiencias = [];
+            document.querySelectorAll('.experiencia-item').forEach(item => {
                 const exp = {
-                    [span_65](start_span)cargo: item.querySelector('[name="cargo"]').value.trim(), //[span_65](end_span)
+                    cargo: item.querySelector('[name="cargo"]').value.trim(),
                     empresa: item.querySelector('[name="empresa"]').value.trim(),
                     cidade: item.querySelector('[name="cidade-exp"]').value.trim(),
                     dataInicio: item.querySelector('[name="data-inicio-exp"]').value.trim(),
                     dataFim: item.querySelector('[name="data-fim-exp"]').value.trim(),
                     descricao: item.querySelector('[name="descricao-exp"]').value.trim().split('\n').filter(line => line.length > 0)
                 };
-                if (exp.cargo || exp.empresa) cvData.experiencias.push(exp); [span_66](start_span)//[span_66](end_span)
+                if (exp.cargo || exp.empresa) cvData.experiencias.push(exp);
             });
             
-            cvData.formacoes = []; [span_67](start_span)//[span_67](end_span)
-            [span_68](start_span)document.querySelectorAll('.formacao-item').forEach(item => { //[span_68](end_span)
+            cvData.formacoes = [];
+            document.querySelectorAll('.formacao-item').forEach(item => {
                 const formacao = {
                     curso: item.querySelector('[name="curso"]').value.trim(),
                     instituicao: item.querySelector('[name="instituicao"]').value.trim(),
                     dataConclusao: item.querySelector('[name="data-conclusao"]').value.trim(),
-                    [span_69](start_span)tipo: item.querySelector('[name="tipo-formacao"]').value.trim() //[span_69](end_span)
+                    tipo: item.querySelector('[name="tipo-formacao"]').value.trim()
                 };
-                if (formacao.curso || formacao.instituicao) cvData.formacoes.push(formacao); [span_70](start_span)//[span_70](end_span)
+                if (formacao.curso || formacao.instituicao) cvData.formacoes.push(formacao);
             });
             
-            cvData.idiomas = []; [span_71](start_span)//[span_71](end_span)
-            [span_72](start_span)document.querySelectorAll('.idioma-item').forEach(item => { //[span_72](end_span)
+            cvData.idiomas = [];
+            document.querySelectorAll('.idioma-item').forEach(item => {
                 const idioma = {
                     idioma: item.querySelector('[name="idioma"]').value.trim(),
                     nivel: item.querySelector('[name="nivel"]').value.trim()
                 };
-                if (idioma.idioma) cvData.idiomas.push(idioma); [span_73](start_span)//[span_73](end_span)
+                if (idioma.idioma) cvData.idiomas.push(idioma);
             });
             
-            [span_74](start_span)// Geração do HTML do CV[span_74](end_span)
-            let html = ''; [span_75](start_span)//[span_75](end_span)
+            // Geração do HTML do CV
+            let html = '';
 
-            [span_76](start_span)// 1. HEADER (DADOS PESSOAIS)[span_76](end_span)
-            [span_77](start_span)if (cvData.nome) { //[span_77](end_span)
+            // 1. HEADER (DADOS PESSOAIS)
+            if (cvData.nome) {
                 html += `
                     <div class="text-center pb-4 mb-4 border-b border-gray-300">
                         <h1 class="text-3xl font-extrabold text-gray-900">${cvData.nome.toUpperCase()}</h1>
@@ -567,24 +565,24 @@
                             ${(cvData.telefone || cvData.email) && cvData.endereco ? ' | ' : ''}
                             ${cvData.endereco ? cvData.endereco : ''}
                             ${(cvData.telefone || cvData.email || cvData.endereco) && cvData.linkedin ? ' | ' : ''}
-                            ${cvData.linkedin ? `<a href="https://${cvData.linkedin}" target="_blank" class="text-blue-600 hover:underline">${cvData.linkedin}</a>` : ''}
+                            ${cvData.linkedin ? `<a href="https://${cvData.linkedin.replace(/https?:\/\//, '')}" target="_blank" class="text-blue-600 hover:underline">${cvData.linkedin.replace(/https?:\/\//, '')}</a>` : ''}
                         </p>
                     </div>
-                `; [span_78](start_span)//[span_78](end_span)
+                `;
             }
 
-            [span_79](start_span)// 2. OBJETIVO[span_79](end_span)
-            [span_80](start_span)if (cvData.objetivo) { //[span_80](end_span)
+            // 2. OBJETIVO
+            if (cvData.objetivo) {
                 html += `
                     <div class="cv-section break-avoid">
                         <h2 class="cv-section-title">OBJETIVO PROFISSIONAL</h2>
                         <p class="text-sm text-gray-700">${cvData.objetivo}</p>
                     </div>
-                `; [span_81](start_span)//[span_81](end_span)
+                `;
             }
 
-            [span_82](start_span)// 3. EXPERIÊNCIA PROFISSIONAL[span_82](end_span)
-            [span_83](start_span)if (cvData.experiencias.length > 0) { //[span_83](end_span)
+            // 3. EXPERIÊNCIA PROFISSIONAL
+            if (cvData.experiencias.length > 0) {
                 html += `
                     <div class="cv-section">
                         <h2 class="cv-section-title">EXPERIÊNCIA PROFISSIONAL</h2>
@@ -600,11 +598,11 @@
                             </div>
                         `).join('<hr class="my-3 border-gray-200" />')}
                     </div>
-                `; [span_84](start_span)//[span_84](end_span)
+                `;
             }
 
-            [span_85](start_span)// 4. FORMAÇÃO ACADÊMICA[span_85](end_span)
-            [span_86](start_span)if (cvData.formacoes.length > 0) { //[span_86](end_span)
+            // 4. FORMAÇÃO ACADÊMICA
+            if (cvData.formacoes.length > 0) {
                 html += `
                     <div class="cv-section break-avoid">
                         <h2 class="cv-section-title">FORMAÇÃO ACADÊMICA</h2>
@@ -615,42 +613,42 @@
                             </div>
                         `).join('')}
                     </div>
-                `; [span_87](start_span)//[span_87](end_span)
+                `;
             }
             
-            [span_88](start_span)// 5. HABILIDADES[span_88](end_span)
-            const tec = cvData['habilidades-tec'] ? cvData['habilidades-tec'].split(',').map(h => h.trim()).filter(h => h.length > 0) : []; [span_89](start_span)//[span_89](end_span)
-            const soft = cvData['habilidades-soft'] ? cvData['habilidades-soft'].split(',').map(h => h.trim()).filter(h => h.length > 0) : []; [span_90](start_span)//[span_90](end_span)
+            // 5. HABILIDADES
+            const tec = cvData['habilidades-tec'] ? cvData['habilidades-tec'].split(',').map(h => h.trim()).filter(h => h.length > 0) : [];
+            const soft = cvData['habilidades-soft'] ? cvData['habilidades-soft'].split(',').map(h => h.trim()).filter(h => h.length > 0) : [];
 
-            [span_91](start_span)if (tec.length > 0 || soft.length > 0 || cvData.idiomas.length > 0) { //[span_91](end_span)
+            if (tec.length > 0 || soft.length > 0 || cvData.idiomas.length > 0) {
                 html += `
                     <div class="cv-section break-avoid">
                         <h2 class="cv-section-title">COMPETÊNCIAS</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                `; [span_92](start_span)//[span_92](end_span)
+                `;
                 
                 // Habilidades Técnicas
-                [span_93](start_span)if (tec.length > 0) { //[span_93](end_span)
+                if (tec.length > 0) {
                     html += `
                         <div>
                             <p class="font-semibold text-gray-800 mb-1">Técnicas:</p>
                             <p class="text-gray-700">${tec.join(' | ')}</p>
                         </div>
-                    `; [span_94](start_span)//[span_94](end_span)
+                    `;
                 }
                 
                 // Habilidades Comportamentais
-                [span_95](start_span)if (soft.length > 0) { //[span_95](end_span)
+                if (soft.length > 0) {
                     html += `
                         <div>
                             <p class="font-semibold text-gray-800 mb-1">Comportamentais (Soft Skills):</p>
                             <p class="text-gray-700">${soft.join(' | ')}</p>
                         </div>
-                    `; [span_96](start_span)//[span_96](end_span)
+                    `;
                 }
                 
                 // Idiomas
-                [span_97](start_span)if (cvData.idiomas.length > 0) { //[span_97](end_span)
+                if (cvData.idiomas.length > 0) {
                     html += `
                         <div class="md:col-span-2">
                             <p class="font-semibold text-gray-800 mb-1">Idiomas:</p>
@@ -658,56 +656,56 @@
                                 ${cvData.idiomas.map(idioma => `${idioma.idioma} (${idioma.nivel})`).join(' | ')}
                             </p>
                         </div>
-                    `; [span_98](start_span)//[span_98](end_span)
+                    `;
                 }
 
                 html += `
                         </div>
                     </div>
-                `; [span_99](start_span)//[span_99](end_span)
+                `;
             }
 
-            cvContent.innerHTML = html || [span_100](start_span)//[span_100](end_span)
-            '<div class="text-center p-8 text-gray-500"><p class="text-lg font-medium">Preencha o formulário para visualizar seu currículo aqui.</p></div>'; [span_101](start_span)//[span_101](end_span)
+            cvContent.innerHTML = html ||
+            '<div class="text-center p-8 text-gray-500"><p class="text-lg font-medium">Preencha o formulário para visualizar seu currículo aqui.</p></div>';
         }
 
         // --- INICIALIZAÇÃO DE EVENTOS ---
 
-        // Escuta mudanças nos inputs de dados simples (nome, email, etc.)
-        form.querySelectorAll('input:not([name*="-"]), textarea:not([name*="-"]), select:not([name*="-"])').forEach(input => {
-            input.addEventListener('input', renderCV);
-        });
+        // Listener Global para renderizar o CV em tempo real ao mudar qualquer campo (estático ou dinâmico)
+        form.addEventListener('input', renderCV);
 
-        [span_102](start_span)// Evento para gerar o PDF[span_102](end_span)
-        [span_103](start_span)downloadPdfBtn.addEventListener('click', () => { //[span_103](end_span)
-            // Re-renderiza o CV uma última vez para garantir
+        // Evento para gerar o PDF
+        downloadPdfBtn.addEventListener('click', () => {
             renderCV(); 
             
             const element = document.getElementById('cv-content');
             
-            [span_104](start_span)// Oculta o botão de download para a impressão[span_104](end_span)
-            downloadBtnMobileContainer.classList.add('hidden'); // Usa o contêiner móvel
+            // Oculta o botão de download para a impressão
+            downloadBtnMobileContainer.classList.add('hidden');
+
+            // Nome de arquivo
+            const fileName = (cvData.nome || 'curriculo').toLowerCase().replace(/\s/g, '-') + '.pdf';
 
             // Configurações do html2pdf
             const opt = {
                 margin: 0.5,
-                filename: (cvData.nome || 'curriculo').toLowerCase().replace(/\s/g, '-') + '.pdf', // Nome de arquivo melhor
-                [span_105](start_span)image: { type: 'jpeg', quality: 0.98 }, //[span_105](end_span)
-                [span_106](start_span)html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true }, //[span_106](end_span)
-                [span_107](start_span)jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' } //[span_107](end_span)
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
             };
 
             // Gera e salva o PDF
             html2pdf().set(opt).from(element).save().then(() => {
                 // Reexibe o botão após a geração (apenas se estiver em mobile view)
                 if (isMobileView) {
-                    [span_108](start_span)downloadBtnMobileContainer.classList.remove('hidden'); //[span_108](end_span)
+                    downloadBtnMobileContainer.classList.remove('hidden');
                 }
             });
         });
 
-        [span_109](start_span)// Chamada inicial para preencher o CV com dados vazios[span_109](end_span)
-        renderCV();
+        // Chamada inicial para preencher o CV
+        document.addEventListener('DOMContentLoaded', renderCV);
     </script>
 </body>
 </html>

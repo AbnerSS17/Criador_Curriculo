@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Currículo Dinâmico</title>
+    <!-- Carrega Tailwind CSS para estilização moderna e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega html2pdf.js para gerar o PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Estilos globais e de fonte */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        /* Estilos específicos para a visualização do PDF */
+        #cv-content {
+            padding: 20px; /* Reduzido o padding para mobile */
+            background: white;
+            /* Largura máxima para manter o aspecto A4 em telas grandes */
+            max-width: 800px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        @media (min-width: 1024px) {
+             #cv-content {
+                padding: 40px; /* Padding maior no desktop */
+            }
+        }
+
+        .cv-section-title {
+            border-bottom: 2px solid #3b82f6; /* Azul primário do Tailwind */
+            padding-bottom: 4px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 1.25rem; /* text-xl */
+        }
+
+        /* Classes para a experiência */
+        .cv-job-title {
+            font-weight: 600; /* semibold */
+            color: #1f2937; /* gray-800 */
+        }
+        .cv-company-info {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* gray-500 */
+            margin-bottom: 5px;
+        }
+        .cv-description-item {
+            font-size: 0.875rem; /* text-sm */
+            margin-left: 15px;
+            list-style: disc;
+        }
+
+        /* Classe para forçar quebra de página se estiver em modo de impressão (PDF) */
+        .html2pdf__page-break {
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 bg-gray-100">
+
+    <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6 lg:mb-8">Gerador de Currículo Dinâmico</h1>
+
+    <!-- TABS/TOGGLE para Mobile -->
+    <div class="lg:hidden flex justify-center mb-4 space-x-4">
+        <button id="show-form-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-blue-500 text-white hover:bg-blue-600">
+            Editar Formulário
+        </button>
+        <button id="show-preview-btn" class="px-4 py-2 text-sm font-medium rounded-lg shadow-md transition duration-150 bg-gray-300 text-gray-800 hover:bg-gray-400">
+            Pré-visualizar CV
+        </button>
+    </div>
+
+    <div id="main-content" class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:gap-8">
+
+        <!-- 1. CONTAINER DO FORMULÁRIO (100% no Mobile, 50% no Desktop) -->
+        <div id="form-container" class="w-full lg:w-1/2 mb-6 lg:mb-0">
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
+                <form id="cv-form" class="space-y-6">
+                    
+                    <!-- DADOS PESSOAIS -->
+                    <div class="section-group">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Dados Pessoais</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="nome" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                                <input type="text" name="nome" id="nome" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Seu Nome Aqui">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                                    <input type="text" name="telefone" id="telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="(99) 99999-9999">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" name="email" id="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="exemplo@email.com">
+                                </div>
+                                <div>
+                                    <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn (URL)</label>
+                                    <input type="text" name="linkedin" id="linkedin" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="linkedin.com/in/seuuser">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="endereco" class="block text-sm font-medium text-gray-700">Endereço (Cidade/Estado)</label>
+                                <input type="text" name="endereco" id="endereco" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Ex: São Paulo - SP">
+                            </div>
+                            <div>
+                                <label for="objetivo" class="block text-sm font-medium text-gray-700">Objetivo Profissional</label>
+                                <textarea name="objetivo" id="objetivo" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Ex: Buscar uma oportunidade como Desenvolvedor Front-end..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXPERIÊNCIAS -->
+                    <div class="section-group mt-6 pt-6 border-t border-gray-200">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Experiência Profissional</h2>
+                        <div id="experiencias-container" class="space-y-4">
+                            <!-- Template de Experiência -->
+                            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #1</h3>
+                                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                                    Remover
+                                </button>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
+                                        <input type="text" name="cargo" id="cargo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
+                                        <input type="text" name="empresa" id="empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                    <div>
+                                        <label for="data-inicio-exp" class="block text-sm font-medium text-gray-700">Data de Início</label>
+                                        <input type="month" name="data-inicio-exp" id="data-inicio-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="data-fim-exp" class="block text-sm font-medium text-gray-700">Data de Fim (ou Atual)</label>
+                                        <input type="month" name="data-fim-exp" id="data-fim-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="cidade-exp" class="block text-sm font-medium text-gray-700">Cidade/Estado</label>
+                                        <input type="text" name="cidade-exp" id="cidade-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <label for="descricao-exp" class="block text-sm font-medium text-gray-700">Descrição das Atividades (uma por linha)</label>
+                                    <textarea name="descricao-exp" id="descricao-exp" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-experiencia" class="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition duration-150">
+                            + Adicionar Experiência
+                        </button>
+                    </div>
+
+                    <!-- FORMAÇÃO ACADÊMICA -->
+                    <div class="section-group mt-6 pt-6 border-t border-gray-200">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Formação Acadêmica</h2>
+                        <div id="formacoes-container" class="space-y-4">
+                            <!-- Template de Formação -->
+                            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Formação #1</h3>
+                                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                                    Remover
+                                </button>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="curso" class="block text-sm font-medium text-gray-700">Curso/Título</label>
+                                        <input type="text" name="curso" id="curso" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="instituicao" class="block text-sm font-medium text-gray-700">Instituição</label>
+                                        <input type="text" name="instituicao" id="instituicao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div>
+                                        <label for="data-conclusao" class="block text-sm font-medium text-gray-700">Data de Conclusão (ou Previsão)</label>
+                                        <input type="month" name="data-conclusao" id="data-conclusao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="tipo-formacao" class="block text-sm font-medium text-gray-700">Tipo de Formação</label>
+                                        <select name="tipo-formacao" id="tipo-formacao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white">
+                                            <option value="">Selecione</option>
+                                            <option value="Ensino Médio">Ensino Médio</option>
+                                            <option value="Técnico">Técnico</option>
+                                            <option value="Graduação">Graduação</option>
+                                            <option value="Pós-Graduação">Pós-Graduação</option>
+                                            <option value="Mestrado">Mestrado</option>
+                                            <option value="Doutorado">Doutorado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-formacao" class="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition duration-150">
+                            + Adicionar Formação
+                        </button>
+                    </div>
+
+                    <!-- HABILIDADES TÉCNICAS -->
+                    <div class="section-group mt-6 pt-6 border-t border-gray-200">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Habilidades Técnicas</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="habilidades-tec" class="block text-sm font-medium text-gray-700">Tecnologias/Ferramentas (separadas por vírgula)</label>
+                                <textarea name="habilidades-tec" id="habilidades-tec" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Ex: JavaScript, Python, SQL, AWS, Figma"></textarea>
+                            </div>
+                            <div>
+                                <label for="habilidades-soft" class="block text-sm font-medium text-gray-700">Habilidades Comportamentais (separadas por vírgula)</label>
+                                <textarea name="habilidades-soft" id="habilidades-soft" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Ex: Comunicação, Liderança, Resolução de Problemas"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IDIOMAS -->
+                    <div class="section-group mt-6 pt-6 border-t border-gray-200">
+                        <h2 class="text-xl font-bold text-blue-600 mb-4 border-b pb-2">Idiomas</h2>
+                        <div id="idiomas-container" class="space-y-4">
+                            <!-- Template de Idioma -->
+                            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Idioma #1</h3>
+                                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                                    Remover
+                                </button>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="idioma" class="block text-sm font-medium text-gray-700">Idioma</label>
+                                        <input type="text" name="idioma" id="idioma" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                    </div>
+                                    <div>
+                                        <label for="nivel" class="block text-sm font-medium text-gray-700">Nível de Proficiência</label>
+                                        <select name="nivel" id="nivel" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white">
+                                            <option value="">Selecione</option>
+                                            <option value="Básico">Básico</option>
+                                            <option value="Intermediário">Intermediário</option>
+                                            <option value="Avançado">Avançado</option>
+                                            <option value="Fluente">Fluente</option>
+                                            <option value="Nativo">Nativo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-idioma" class="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition duration-150">
+                            + Adicionar Idioma
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. CONTAINER DA PRÉ-VISUALIZAÇÃO (Escondido no Mobile por padrão, 50% no Desktop) -->
+        <!-- O 'hidden' inicial e 'lg:block' garante que ele só apareça lado a lado em telas grandes -->
+        <div id="preview-container" class="w-full lg:w-1/2 hidden lg:block">
+            <div id="cv-content" class="rounded-xl shadow-lg border border-gray-200">
+                <!-- Este conteúdo será preenchido pelo JavaScript -->
+                <div class="text-center p-8 text-gray-500">
+                    <p class="text-lg font-medium">Preencha o formulário para visualizar seu currículo aqui.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botão de Download Fixo e Responsivo -->
+    <!-- Fixo no rodapé para mobile, estático no desktop -->
+    <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 lg:static lg:p-0 lg:mt-6 max-w-7xl mx-auto">
+        <button id="download-pdf" class="w-full py-3 px-4 border border-transparent rounded-md shadow-xl text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.01]">
+            Gerar PDF (Baixar Currículo)
+        </button>
+    </div>
+
+    <script>
+        // Variáveis de controle do DOM
+        const form = document.getElementById('cv-form');
+        const cvContent = document.getElementById('cv-content');
+        const downloadPdfBtn = document.getElementById('download-pdf');
+        
+        // Containers Dinâmicos
+        const experienciasContainer = document.getElementById('experiencias-container');
+        const formacoesContainer = document.getElementById('formacoes-container');
+        const idiomasContainer = document.getElementById('idiomas-container');
+
+        // Botões Responsivos
+        const formContainer = document.getElementById('form-container');
+        const previewContainer = document.getElementById('preview-container');
+        const showFormBtn = document.getElementById('show-form-btn');
+        const showPreviewBtn = document.getElementById('show-preview-btn');
+
+        let isMobileView = window.innerWidth < 1024; // Ponto de corte do lg:
+
+        // --- FUNÇÕES DE LAYOUT RESPONSIVO ---
+
+        function toggleView(view) {
+            if (view === 'form') {
+                formContainer.classList.remove('hidden');
+                previewContainer.classList.add('hidden');
+                showFormBtn.classList.add('bg-blue-500', 'text-white');
+                showFormBtn.classList.remove('bg-gray-300', 'text-gray-800');
+                showPreviewBtn.classList.add('bg-gray-300', 'text-gray-800');
+                showPreviewBtn.classList.remove('bg-blue-500', 'text-white');
+            } else { // 'preview'
+                formContainer.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                showPreviewBtn.classList.add('bg-blue-500', 'text-white');
+                showPreviewBtn.classList.remove('bg-gray-300', 'text-gray-800');
+                showFormBtn.classList.add('bg-gray-300', 'text-gray-800');
+                showFormBtn.classList.remove('bg-blue-500', 'text-white');
+            }
+        }
+
+        // Inicializa a visualização no mobile para o formulário
+        if (isMobileView) {
+            toggleView('form');
+        } else {
+            // Garante que ambos estejam visíveis no desktop
+            formContainer.classList.remove('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+
+        showFormBtn.addEventListener('click', () => toggleView('form'));
+        showPreviewBtn.addEventListener('click', () => toggleView('preview'));
+
+        window.addEventListener('resize', () => {
+            isMobileView = window.innerWidth < 1024;
+            if (!isMobileView) {
+                // Se for desktop, garante que ambos estejam visíveis
+                formContainer.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
+            } else {
+                // Se voltar ao mobile, garante que a visualização de abas volte
+                toggleView('form');
+            }
+        });
+
+
+        // --- FUNÇÕES DE MANIPULAÇÃO DO DOM DINÂMICO ---
+
+        // Função para formatar a data (AAAA-MM -> Mês/AAAA)
+        const formatDate = (dateString) => {
+            if (!dateString) return 'Atual';
+            const [year, month] = dateString.split('-');
+            const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+            return `${monthNames[parseInt(month) - 1]}/${year}`;
+        };
+
+        // Adiciona funcionalidade de adicionar/remover itens dinâmicos
+        function setupDynamicItems(container, templateHTML, addButtonId, itemClass, titlePrefix) {
+            const addButton = document.getElementById(addButtonId);
+            let itemCount = container.children.length;
+
+            const updateTitles = () => {
+                Array.from(container.children).forEach((item, index) => {
+                    item.querySelector('.group-title').textContent = `${titlePrefix} #${index + 1}`;
+                });
+            };
+
+            const removeItem = (e) => {
+                if (e.target.classList.contains('remove-btn')) {
+                    e.target.closest(`.${itemClass}`).remove();
+                    updateTitles();
+                    renderCV();
+                }
+            };
+
+            const addItem = () => {
+                itemCount++;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = templateHTML;
+                const newItem = tempDiv.firstChild;
+                newItem.classList.add(itemClass);
+                newItem.querySelector('.group-title').textContent = `${titlePrefix} #${itemCount}`;
+                container.appendChild(newItem);
+                
+                newItem.querySelectorAll('input, textarea, select').forEach(input => {
+                    input.addEventListener('input', renderCV);
+                });
+                updateTitles();
+            };
+
+            // Remove o primeiro item (o template)
+            container.children[0].remove();
+
+            // Adiciona o primeiro item real na inicialização
+            const firstItemTemplate = templateHTML;
+            container.innerHTML = firstItemTemplate;
+
+            // Inicializa eventos
+            addButton.addEventListener('click', addItem);
+            container.addEventListener('click', removeItem);
+
+            // Re-renderiza o CV quando qualquer input dentro do container mudar
+            container.querySelectorAll('input, textarea, select').forEach(input => {
+                input.addEventListener('input', renderCV);
+            });
+        }
+        
+        // Templates de HTML puros (mais fácil de clonar e manipular)
+        const experienciaTemplate = `
+            <div class="experiencia-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Experiência #X</h3>
+                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                    Remover
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="cargo" class="block text-sm font-medium text-gray-700">Cargo</label>
+                        <input type="text" name="cargo" id="cargo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
+                        <input type="text" name="empresa" id="empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                        <label for="data-inicio-exp" class="block text-sm font-medium text-gray-700">Data de Início</label>
+                        <input type="month" name="data-inicio-exp" id="data-inicio-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="data-fim-exp" class="block text-sm font-medium text-gray-700">Data de Fim (ou Atual)</label>
+                        <input type="month" name="data-fim-exp" id="data-fim-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="cidade-exp" class="block text-sm font-medium text-gray-700">Cidade/Estado</label>
+                        <input type="text" name="cidade-exp" id="cidade-exp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="descricao-exp" class="block text-sm font-medium text-gray-700">Descrição das Atividades (uma por linha)</label>
+                    <textarea name="descricao-exp" id="descricao-exp" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"></textarea>
+                </div>
+            </div>
+        `;
+
+        const formacaoTemplate = `
+            <div class="formacao-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Formação #X</h3>
+                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                    Remover
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="curso" class="block text-sm font-medium text-gray-700">Curso/Título</label>
+                        <input type="text" name="curso" id="curso" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="instituicao" class="block text-sm font-medium text-gray-700">Instituição</label>
+                        <input type="text" name="instituicao" id="instituicao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label for="data-conclusao" class="block text-sm font-medium text-gray-700">Data de Conclusão (ou Previsão)</label>
+                        <input type="month" name="data-conclusao" id="data-conclusao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="tipo-formacao" class="block text-sm font-medium text-gray-700">Tipo de Formação</label>
+                        <select name="tipo-formacao" id="tipo-formacao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white">
+                            <option value="">Selecione</option>
+                            <option value="Ensino Médio">Ensino Médio</option>
+                            <option value="Técnico">Técnico</option>
+                            <option value="Graduação">Graduação</option>
+                            <option value="Pós-Graduação">Pós-Graduação</option>
+                            <option value="Mestrado">Mestrado</option>
+                            <option value="Doutorado">Doutorado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const idiomaTemplate = `
+            <div class="idioma-item p-4 border border-gray-300 rounded-lg bg-white relative break-avoid">
+                <h3 class="group-title text-lg font-semibold text-gray-800 mb-3">Idioma #X</h3>
+                <button type="button" class="remove-btn absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm font-medium transition duration-150">
+                    Remover
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="idioma" class="block text-sm font-medium text-gray-700">Idioma</label>
+                        <input type="text" name="idioma" id="idioma" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    </div>
+                    <div>
+                        <label for="nivel" class="block text-sm font-medium text-gray-700">Nível de Proficiência</label>
+                        <select name="nivel" id="nivel" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white">
+                            <option value="">Selecione</option>
+                            <option value="Básico">Básico</option>
+                            <option value="Intermediário">Intermediário</option>
+                            <option value="Avançado">Avançado</option>
+                            <option value="Fluente">Fluente</option>
+                            <option value="Nativo">Nativo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Chamadas para configurar os itens dinâmicos
+        setupDynamicItems(experienciasContainer, experienciaTemplate, 'add-experiencia', 'experiencia-item', 'Experiência');
+        setupDynamicItems(formacoesContainer, formacaoTemplate, 'add-formacao', 'formacao-item', 'Formação');
+        setupDynamicItems(idiomasContainer, idiomaTemplate, 'add-idioma', 'idioma-item', 'Idioma');
+
+
+        // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DO CV ---
+
+        function renderCV() {
+            const data = new FormData(form);
+            const cvData = {};
+            
+            // Reúne dados simples
+            for (let pair of data.entries()) {
+                if (!pair[0].includes('-')) { // Ignora campos de listas dinâmicas
+                    cvData[pair[0]] = pair[1].trim();
+                }
+            }
+
+            // Reúne dados de listas dinâmicas (Experiências, Formações, Idiomas)
+            cvData.experiencias = [];
+            document.querySelectorAll('.experiencia-item').forEach(item => {
+                const exp = {
+                    cargo: item.querySelector('[name="cargo"]').value.trim(),
+                    empresa: item.querySelector('[name="empresa"]').value.trim(),
+                    cidade: item.querySelector('[name="cidade-exp"]').value.trim(),
+                    dataInicio: item.querySelector('[name="data-inicio-exp"]').value.trim(),
+                    dataFim: item.querySelector('[name="data-fim-exp"]').value.trim(),
+                    descricao: item.querySelector('[name="descricao-exp"]').value.trim().split('\n').filter(line => line.length > 0)
+                };
+                if (exp.cargo || exp.empresa) cvData.experiencias.push(exp);
+            });
+
+            cvData.formacoes = [];
+            document.querySelectorAll('.formacao-item').forEach(item => {
+                const formacao = {
+                    curso: item.querySelector('[name="curso"]').value.trim(),
+                    instituicao: item.querySelector('[name="instituicao"]').value.trim(),
+                    dataConclusao: item.querySelector('[name="data-conclusao"]').value.trim(),
+                    tipo: item.querySelector('[name="tipo-formacao"]').value.trim()
+                };
+                if (formacao.curso || formacao.instituicao) cvData.formacoes.push(formacao);
+            });
+
+            cvData.idiomas = [];
+            document.querySelectorAll('.idioma-item').forEach(item => {
+                const idioma = {
+                    idioma: item.querySelector('[name="idioma"]').value.trim(),
+                    nivel: item.querySelector('[name="nivel"]').value.trim()
+                };
+                if (idioma.idioma) cvData.idiomas.push(idioma);
+            });
+
+            // Geração do HTML do CV
+            let html = '';
+
+            // 1. HEADER (DADOS PESSOAIS)
+            if (cvData.nome) {
+                html += `
+                    <div class="text-center pb-4 mb-4 border-b border-gray-300">
+                        <h1 class="text-3xl font-extrabold text-gray-900">${cvData.nome.toUpperCase()}</h1>
+                        <p class="text-sm text-gray-600 mt-1">
+                            ${cvData.telefone ? `Tel: ${cvData.telefone}` : ''}
+                            ${cvData.telefone && cvData.email ? ' | ' : ''}
+                            ${cvData.email ? cvData.email : ''}
+                            ${(cvData.telefone || cvData.email) && cvData.endereco ? ' | ' : ''}
+                            ${cvData.endereco ? cvData.endereco : ''}
+                            ${(cvData.telefone || cvData.email || cvData.endereco) && cvData.linkedin ? ' | ' : ''}
+                            ${cvData.linkedin ? `<a href="https://${cvData.linkedin}" target="_blank" class="text-blue-600 hover:underline">${cvData.linkedin}</a>` : ''}
+                        </p>
+                    </div>
+                `;
+            }
+
+            // 2. OBJETIVO
+            if (cvData.objetivo) {
+                html += `
+                    <div class="cv-section">
+                        <h2 class="cv-section-title">OBJETIVO PROFISSIONAL</h2>
+                        <p class="text-sm text-gray-700">${cvData.objetivo}</p>
+                    </div>
+                `;
+            }
+
+            // 3. EXPERIÊNCIA PROFISSIONAL
+            if (cvData.experiencias.length > 0) {
+                html += `
+                    <div class="cv-section">
+                        <h2 class="cv-section-title">EXPERIÊNCIA PROFISSIONAL</h2>
+                        ${cvData.experiencias.map(exp => `
+                            <div class="mb-4">
+                                <p class="cv-job-title">${exp.cargo || 'Cargo não especificado'}</p>
+                                <p class="cv-company-info">${exp.empresa}${exp.cidade ? `, ${exp.cidade}` : ''} | ${formatDate(exp.dataInicio)} - ${formatDate(exp.dataFim)}</p>
+                                ${exp.descricao.length > 0 ? `
+                                    <ul class="list-disc ml-5 text-gray-700">
+                                        ${exp.descricao.map(desc => `<li class="cv-description-item">${desc}</li>`).join('')}
+                                    </ul>
+                                ` : ''}
+                            </div>
+                        `).join('<hr class="my-3 border-gray-200" />')}
+                    </div>
+                `;
+            }
+
+            // 4. FORMAÇÃO ACADÊMICA
+            if (cvData.formacoes.length > 0) {
+                html += `
+                    <div class="cv-section">
+                        <h2 class="cv-section-title">FORMAÇÃO ACADÊMICA</h2>
+                        ${cvData.formacoes.map(formacao => `
+                            <div class="mb-3 text-sm text-gray-700">
+                                <p class="font-semibold text-gray-800">${formacao.curso || 'Curso não especificado'}</p>
+                                <p>${formacao.instituicao} | ${formacao.tipo} | Conclusão: ${formatDate(formacao.dataConclusao)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // 5. HABILIDADES
+            const tec = cvData['habilidades-tec'] ? cvData['habilidades-tec'].split(',').map(h => h.trim()).filter(h => h.length > 0) : [];
+            const soft = cvData['habilidades-soft'] ? cvData['habilidades-soft'].split(',').map(h => h.trim()).filter(h => h.length > 0) : [];
+
+            if (tec.length > 0 || soft.length > 0 || cvData.idiomas.length > 0) {
+                html += `
+                    <div class="cv-section">
+                        <h2 class="cv-section-title">COMPETÊNCIAS</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                `;
+                
+                // Habilidades Técnicas
+                if (tec.length > 0) {
+                    html += `
+                        <div>
+                            <p class="font-semibold text-gray-800 mb-1">Técnicas:</p>
+                            <p class="text-gray-700">${tec.join(' | ')}</p>
+                        </div>
+                    `;
+                }
+                
+                // Habilidades Comportamentais
+                if (soft.length > 0) {
+                    html += `
+                        <div>
+                            <p class="font-semibold text-gray-800 mb-1">Comportamentais (Soft Skills):</p>
+                            <p class="text-gray-700">${soft.join(' | ')}</p>
+                        </div>
+                    `;
+                }
+                
+                // Idiomas
+                if (cvData.idiomas.length > 0) {
+                    html += `
+                        <div class="md:col-span-2">
+                            <p class="font-semibold text-gray-800 mb-1">Idiomas:</p>
+                            <p class="text-gray-700">
+                                ${cvData.idiomas.map(idioma => `${idioma.idioma} (${idioma.nivel})`).join(' | ')}
+                            </p>
+                        </div>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            cvContent.innerHTML = html || '<div class="text-center p-8 text-gray-500"><p class="text-lg font-medium">Preencha o formulário para visualizar seu currículo aqui.</p></div>';
+        }
+
+        // --- INICIALIZAÇÃO DE EVENTOS ---
+
+        // Escuta mudanças no formulário
+        form.addEventListener('input', renderCV);
+
+        // Evento para gerar o PDF
+        downloadPdfBtn.addEventListener('click', () => {
+            // Re-renderiza o CV uma última vez para garantir
+            renderCV(); 
+            
+            const element = document.getElementById('cv-content');
+            
+            // Oculta o botão de download para a impressão
+            downloadPdfBtn.classList.add('hidden');
+
+            // Configurações do html2pdf
+            const opt = {
+                margin: 0.5,
+                filename: 'curriculo.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+            };
+
+            // Gera e salva o PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Reexibe o botão após a geração
+                downloadPdfBtn.classList.remove('hidden');
+            });
+        });
+
+        // Chamada inicial para preencher o CV com dados vazios
+        renderCV();
+    </script>
+</body>
+</html>
